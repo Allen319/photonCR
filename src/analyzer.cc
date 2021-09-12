@@ -5,6 +5,7 @@
 
 #include <ROOT/RDataFrame.hxx>
 #include <TCanvas.h>
+#include <TRatioPlot.h>
 #include <yaml-cpp/yaml.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/program_options.hpp>
@@ -15,15 +16,21 @@
 using namespace ROOT;
 namespace po = boost::program_options;
 
-std::map<double, std::pair<double, double>> TH1toMap(TH1F * h_weight) {
-  std::map<double, std::pair<double, double> > myMap; //label = bin low edge; pair = (bin content; bin error)
-  int nBinsX = h_weight->GetNbinsX();
-  for(int bin_X = 1; bin_X <= nBinsX; bin_X++){
-    myMap[h_weight->GetXaxis()->GetBinLowEdge(bin_X)].first = h_weight->GetBinContent(bin_X); 
-    myMap[h_weight->GetXaxis()->GetBinLowEdge(bin_X)].second = h_weight->GetBinError(bin_X); 
-    
-  }
-  return myMap;
+void drawHist(RDF::RNode df_ll, RDF::RNode df_photon, TString obs, RDF::TH1DModel model){
+  auto h_ll = (TH1F*) df_ll.Histo1D(model, obs).GetValue().Clone();
+  auto h_photon = (TH1F*) df_photon.Histo1D(model, obs, "pt_weight").GetValue().Clone();
+  auto c1 = new TCanvas("c1","c1",1200,1200);
+  h_ll->SetLineColor(kBlue+1);
+  h_photon->SetLineColor(kRed);
+  h_ll->Draw();
+  h_photon->Draw("Same");
+  auto rp_inc = new TRatioPlot(h_ll, h_photon);
+  c1->SetTicks(0,1);
+  rp_inc->Draw();
+  rp_inc->GetLowerRefYaxis()->SetTitle("ratio");
+  rp_inc->GetLowerRefGraph()->SetMinimum(0);
+  rp_inc->GetLowerRefGraph()->SetMaximum(2);
+  c1->Print("mc_closure_" + obs + ".png");
 }
 
 TH1F * GetWeightHisto(TH1F * h_ll, TH1F * h_gamma,  TString obs) {
@@ -41,6 +48,14 @@ TH1F * GetWeightHisto(TH1F * h_ll, TH1F * h_gamma,  TString obs) {
   else
     return h_weight;
 }
+
+float applyWeight(TH1F * h_weight, float boson_eta) {
+    //auto h_weight = (TH1F*) gROOT->Get("eta_weight");
+    auto const bin = h_weight->FindFixBin(boson_eta);
+    return h_weight->GetBinContent(bin);
+    //std::cout << h_weight->GetBinContent(bin) <<std::endl;
+}
+
 RDF::RNode applyCutsCommon(RDF::RNode df){
   std::function<bool(int)> nGoodJet = [](int ngood_jets) { return ngood_jets >= 2; };
   std::function<bool(int)> nGoodbJet = [](int ngood_bjets) { return ngood_bjets == 0; };
@@ -56,7 +71,6 @@ RDF::RNode applyCutsCommon(RDF::RNode df){
                      Filter(nGoodJet, {"ngood_jets"}, "2-jets").
                      Filter(nGoodbJet, {"ngood_bjets"}, "bveto").
                      Filter(nTaus, {"nhad_taus"}, "tau-veto").
-                     Filter(met, {"met_pt"}, "MET<60").
                      Filter(delta_phi_j_met, {"delta_phi_j_met"}, "delta_phi_j_met").
                      //Filter(delta_phi_ZMet_bst, {"delta_phi_ZMet_bst"}).
                      Filter(Jet_etas_multiplied, {"Jet_etas_multiplied"}, "opposite_jet_eta").
@@ -70,11 +84,17 @@ RDF::RNode applyCutsLL(RDF::RNode df){
   std::function<bool(int)> lep_cat = [](int lep_category) { return lep_category == 1 || lep_category == 3; };
   std::function<bool(float)> deltaR_ll = [](float delta_R_ll) { return delta_R_ll < 2.5; };
   auto tmp = df.Filter(lep_cat, {"lep_category"}).
-                Filter(deltaR_ll, {"delta_R_ll"})
-;
+                Filter(deltaR_ll, {"delta_R_ll"});
   return tmp;
 }
+
 RDF::RNode applyCutsPhoton(RDF::RNode df){
+  std::function<bool(float)> met = [](float met) { return met < 60.; };
+  auto tmp = df.Filter(met, {"met_pt"}, "MET<60");
+  return tmp;
+}
+
+RDF::RNode applyCutsMET(RDF::RNode df){
   std::function<bool(float)> boson_eta = [](float Z_eta) { return abs(Z_eta) < 2.4; };
   std::function<bool(int)> nextra_leptons = [](int nextra_leptons) { return nextra_leptons == 0; };
   std::function<bool(int)> ngood_leptons = [](int ngood_leptons) { return ngood_leptons == 0; };
@@ -87,12 +107,7 @@ RDF::RNode applyCutsPhoton(RDF::RNode df){
              Filter(boson_eta, {"Z_eta"});
   return tmp;
 }
-  float applyWeight   (TH1F * h_weight, float boson_eta) {
-    //auto h_weight = (TH1F*) gROOT->Get("eta_weight");
-    auto const bin = h_weight->FindFixBin(boson_eta);
-    return h_weight->GetBinContent(bin);
-    //std::cout << h_weight->GetBinContent(bin) <<std::endl;
-  }
+
 int main(int argc, char **argv){
 
   Options options(argc, argv);
@@ -130,13 +145,21 @@ int main(int argc, char **argv){
         "Jet_qgl"})
       varibles.push_back(br);
   }
+  // enabling Multi-Thread
   ROOT::EnableImplicitMT();
+  // data-frame initializing
   RDataFrame df_dilepton(tree, dilepton_files, varibles);
   RDataFrame df_photon(tree, photon_files, varibles);
+  // apply common selections
   auto df_ll_filtered_tmp = applyCutsCommon(df_dilepton);
   auto df_gamma_filtered_tmp = applyCutsCommon(df_photon);
-  auto df_ll_filtered = applyCutsLL(df_ll_filtered_tmp);
-  auto df_gamma_filtered = applyCutsPhoton(df_gamma_filtered_tmp);
+  // apply dilepton & photon selections separately
+  auto df_ll_filtered_noMET = applyCutsLL(df_ll_filtered_tmp);
+  auto df_gamma_filtered_noMET = applyCutsPhoton(df_gamma_filtered_tmp);
+  // apply MET cut, (we will need the ones without MET cut to draw control plots)
+  auto df_ll_filtered = applyCutsMET(df_ll_filtered_noMET);
+  auto df_gamma_filtered = applyCutsMET(df_gamma_filtered_noMET);
+
   auto df_ll_aug = df_ll_filtered.
                   Define("boson_pt", "Z_pt").
                   Define("boson_eta", "abs(Z_eta)").
@@ -150,17 +173,14 @@ int main(int argc, char **argv){
                   Define("nvtx", "Pileup_nPU").
                   Define("ptmiss", "met_pt").
                   Define("corr", "weight");
+  // fill histograms in binning of nvtx and abseta
   auto h_nvtx_ll = (TH1F*)df_ll_aug.Histo1D({"nvtx_ll","nvtx_ll",100,0,100},"nvtx", "corr").GetValue().Clone();
   auto h_nvtx_gamma = (TH1F*)df_gamma_aug.Histo1D({"nvtx_gamma","nvtx_gamma",100,0,100},"nvtx", "corr").GetValue().Clone();
   auto h_eta_ll = (TH1F*)df_ll_aug.Histo1D({"eta_ll","eta_ll",24,0,2.4},"boson_eta", "corr").GetValue().Clone();
   auto h_eta_gamma = (TH1F*)df_gamma_aug.Histo1D({"eta_gamma","eta_gamma",24,0,2.4},"boson_eta", "corr").GetValue().Clone();
-  //auto f1 = new TFile("weights.root", "RECREATE");
   auto h_nvtx_weight = GetWeightHisto(h_nvtx_ll, h_nvtx_gamma, "nvtx");
   auto h_eta_weight = GetWeightHisto(h_eta_ll, h_eta_gamma, "eta");
-  //h_nvtx_weight->Write();
-  //h_eta_weight->Write();
-  //f1->Close();
-  //std::cout<<applyEtaWeight(h_eta_weight, 1.1) << std::endl;
+  // define a lambda function for applying weights in the Data-Frame
   auto applyEtaWeight = [] (float boson_eta) {
     TH1F * h_weight = (TH1F *)gROOT->Get("eta_weight");
     auto const bin = h_weight->FindFixBin(boson_eta);
@@ -175,12 +195,14 @@ int main(int argc, char **argv){
   auto h_pt_gamma = (TH1F*)df_gamma_eta_weighted.Histo1D(pt_model_gamma,"boson_pt", "corr_eta").GetValue().Clone();
   auto h_pt_weight = GetWeightHisto(h_pt_ll, h_pt_gamma, "pt");
   
+  // define a lambda function for applying weights in the Data-Frame
   auto applyPtWeight = [] (float boson_pt) {
     TH1F * h_weight = (TH1F *)gROOT->Get("pt_weight");
     auto const bin = h_weight->FindFixBin(boson_pt);
     return h_weight->GetBinContent(bin);
   };
   auto df_gamma_eta_pt_weighted = df_gamma_eta_weighted.Define("pt_weight", applyPtWeight, {"boson_pt"});
+  auto df_photon_weighted = df_gamma_filtered_noMET.Define("pt_weight", applyPtWeight, {"Z_pt"});
   std::cout << "All stats:" << std::endl;
   auto allCutsReport = df_gamma_filtered.Report();
   std::cout << "Name\tAll\tPass\tEfficiency" << std::endl;
@@ -188,21 +210,24 @@ int main(int argc, char **argv){
       std::cout << cutInfo.GetName() << "\t" << cutInfo.GetAll() << "\t" << cutInfo.GetPass() << "\t"
                 << cutInfo.GetEff() << " %" << std::endl;
    }
- 
+  const float  met_binning[] = {0,50,100,150,200,250,600,1500};
+  RDF::TH1DModel met_model("","",sizeof(met_binning)/sizeof(float) - 1, met_binning);
+  drawHist(df_ll_filtered_noMET, df_photon_weighted, "met_pt", met_model);
 
-  RDataFrame::ColumnNames_t toBeStored = {"boson_pt","boson_eta", "met_pt",
-                                          "pt_weight",
+  RDataFrame::ColumnNames_t toBeStored_ll = { "met_pt",
                                           }; 
-  df_gamma_eta_pt_weighted.Snapshot("Events","llll.root", toBeStored);
+  RDataFrame::ColumnNames_t toBeStored_photon = toBeStored_ll;
+  toBeStored_photon.push_back("pt_weight");
+   
+  df_photon_weighted.Snapshot("Events","photon.root", toBeStored_photon);
+  df_ll_filtered_noMET.Snapshot("Events","ll.root", toBeStored_ll);
   auto f1 = new TFile("weights.root", "RECREATE");
   h_nvtx_weight->Write();
   h_eta_weight->Write();
   h_pt_weight->Write();
   h_pt_gamma->Write();
   h_pt_ll->Write();
-  //df_gamma_aug.Foreach(applyEtaWeight, {"boson_eta"});
   f1->Close();
-  //std::cout << wrapper.getEventNum(lep_cat) << std::endl;
   return 0;
 }
 
