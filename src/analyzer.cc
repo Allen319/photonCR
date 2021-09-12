@@ -121,6 +121,7 @@ int main(int argc, char **argv){
         "Jet_qgl"})
       varibles.push_back(br);
   }
+  ROOT::EnableImplicitMT();
   RDataFrame df_dilepton(tree, dilepton_files, varibles);
   RDataFrame df_photon(tree, photon_files, varibles);
   auto df_ll_filtered_tmp = applyCutsCommon(df_dilepton);
