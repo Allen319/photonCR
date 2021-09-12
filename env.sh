@@ -1,0 +1,2 @@
+export CMAKE_BINARY_DIR=$(pwd)
+export PATH=$CMAKE_BINARY_DIR/bin:$PATH

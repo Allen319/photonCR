@@ -1,0 +1,4 @@
+tree_name: Events
+dilepton_files: samples/DY
+photon_files: samples/Gjet
+isMC: true
