@@ -32,7 +32,7 @@ target_link_libraries(utils
   PUBLIC ROOT::Hist
 )
 
-add_executable(tuple src/analyzer.cc)
+add_executable(runphoton src/analyzer.cc)
 target_link_libraries(runphoton
   PRIVATE utils
   PUBLIC ROOT::Hist ROOT::ROOTDataFrame ROOT::Tree

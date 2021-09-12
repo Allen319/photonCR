@@ -91,15 +91,18 @@ int main(int argc, char **argv){
   Options options(argc, argv);
   YAML::Node const config = options.GetConfig();
   std::string tree = Options::NodeAs<std::string>(config, {"tree_name"});
-  std::string dilepton_filename = Options::NodeAs<std::string>(config, {"dilepton_files"});
-  std::string photon_filename = Options::NodeAs<std::string>(config, {"photon_files"});
+ // std::string dilepton_filename = Options::NodeAs<std::string>(config, {"dilepton_files"});
+  std::vector<std::string> dilepton_filenames = Options::GetStrings(config, {"dilepton_files"});
+  std::vector<std::string> photon_filenames = Options::GetStrings(config, {"photon_files"});
+  //std::string photon_filename = Options::NodeAs<std::string>(config, {"photon_files"});
   bool isMC = Options::NodeAs<bool>(config, {"isMC"});
-  std::string dileptonPath = FileInPath::Resolve(dilepton_filename);
-  std::string photonPath = FileInPath::Resolve(photon_filename);
   std::vector<std::string> dilepton_files;
   std::vector<std::string> photon_files;
-  FileInPath::GetFilenames(dileptonPath, dilepton_files);
-  FileInPath::GetFilenames(photonPath, photon_files);
+  for (auto &dilepton_filename : dilepton_filenames)
+    FileInPath::GetFilenames(FileInPath::Resolve(dilepton_filename), dilepton_files);
+  for (auto &photon_filename : photon_filenames)
+    FileInPath::GetFilenames(FileInPath::Resolve(photon_filename), photon_files);
+  //std::string photonPath = FileInPath::Resolve(photon_filename);
   RDataFrame::ColumnNames_t varibles = {"nJet","Muon_pt" "Jet_pt_nom", 
       "lead_jet_pt", "lead_jet_phi", "trail_jet_pt", "trail_jet_eta",
       "trail_jet_phi", "lep_category", "ngood_jets", "ngood_bjets",
