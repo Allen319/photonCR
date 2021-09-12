@@ -58,25 +58,32 @@ RDF::RNode applyCutsCommon(RDF::RNode df){
                      Filter(nTaus, {"nhad_taus"}, "tau-veto").
                      Filter(met, {"met_pt"}, "MET<60").
                      Filter(delta_phi_j_met, {"delta_phi_j_met"}, "delta_phi_j_met").
-                    // Filter(delta_phi_ZMet_bst, {"delta_phi_ZMet_bst"}).
-                     //Filter(Jet_etas_multiplied, {"Jet_etas_multiplied"}).
-                     //Filter(dijet_Mjj, {"dijet_Mjj"}).
-                     //Filter(dijet_abs_dEta, {"dijet_abs_dEta"}).
-                     Filter(zpt, {"Z_pt"}, "Boson_pt");
+                     //Filter(delta_phi_ZMet_bst, {"delta_phi_ZMet_bst"}).
+                     Filter(Jet_etas_multiplied, {"Jet_etas_multiplied"}, "opposite_jet_eta").
+                     Filter(dijet_Mjj, {"dijet_Mjj"}, "dijet_Mjj<400").
+                     Filter(dijet_abs_dEta, {"dijet_abs_dEta"}, "dijet_abs_eta<2.4").
+                     Filter(zpt, {"Z_pt"}, "boson_pt>55");
   return tmp;
 }
 
 RDF::RNode applyCutsLL(RDF::RNode df){
   std::function<bool(int)> lep_cat = [](int lep_category) { return lep_category == 1 || lep_category == 3; };
-  std::function<bool(float)> deltaR_ll = [](float deltaR_ll) { return deltaR_ll < 2.5; };
+  std::function<bool(float)> deltaR_ll = [](float delta_R_ll) { return delta_R_ll < 2.5; };
   auto tmp = df.Filter(lep_cat, {"lep_category"}).
-                Filter(deltaR_ll, {"deltaR_ll"})
+                Filter(deltaR_ll, {"delta_R_ll"})
 ;
   return tmp;
 }
 RDF::RNode applyCutsPhoton(RDF::RNode df){
   std::function<bool(float)> boson_eta = [](float Z_eta) { return abs(Z_eta) < 2.4; };
+  std::function<bool(int)> nextra_leptons = [](int nextra_leptons) { return nextra_leptons == 0; };
+  std::function<bool(int)> ngood_leptons = [](int ngood_leptons) { return ngood_leptons == 0; };
+  std::function<bool(int)> nextra_photons = [](int nloose_photons) { return nloose_photons == 1; };
+
   auto tmp = df.
+             Filter(nextra_leptons,{"nextra_leptons"}, "No_nextra_leptons").
+             Filter(ngood_leptons,{"ngood_leptons"}, "No_good_leptons").
+             //Filter(nextra_photons,{"nloose_photons"}, "No_extra_photons").
              Filter(boson_eta, {"Z_eta"});
   return tmp;
 }
@@ -112,7 +119,9 @@ int main(int argc, char **argv){
       "nPhoton", "nMuon", "nElectron", "Pileup_nPU",
       "ngood_leptons", "nextra_leptons",
       "deltaPhiClosestJetMet", "deltaPhiFarthestJetMet",
-      "delta_phi_ZMet_bst", "delta_phi_ZMet"};
+      //"delta_phi_ZMet_bst",
+      "nloose_photons",
+       "delta_phi_ZMet"};
   RDataFrame::ColumnNames_t storeBranches = {"boson_pt", "boson_eta", "Pileup_nPU", "met_pt"};
   if (isMC) {
     //varibles.insert(0, RDataFrame::ColumnNames_t{"weight"});
@@ -126,8 +135,8 @@ int main(int argc, char **argv){
   RDataFrame df_photon(tree, photon_files, varibles);
   auto df_ll_filtered_tmp = applyCutsCommon(df_dilepton);
   auto df_gamma_filtered_tmp = applyCutsCommon(df_photon);
-  auto df_ll_filtered = applyCutsCommon(df_ll_filtered_tmp);
-  auto df_gamma_filtered = applyCutsCommon(df_gamma_filtered_tmp);
+  auto df_ll_filtered = applyCutsLL(df_ll_filtered_tmp);
+  auto df_gamma_filtered = applyCutsPhoton(df_gamma_filtered_tmp);
   auto df_ll_aug = df_ll_filtered.
                   Define("boson_pt", "Z_pt").
                   Define("boson_eta", "abs(Z_eta)").
@@ -180,7 +189,11 @@ int main(int argc, char **argv){
                 << cutInfo.GetEff() << " %" << std::endl;
    }
  
-  df_gamma_eta_pt_weighted.Snapshot("Events","llll.root");
+
+  RDataFrame::ColumnNames_t toBeStored = {"boson_pt","boson_eta", "met_pt",
+                                          "pt_weight",
+                                          }; 
+  df_gamma_eta_pt_weighted.Snapshot("Events","llll.root", toBeStored);
   auto f1 = new TFile("weights.root", "RECREATE");
   h_nvtx_weight->Write();
   h_eta_weight->Write();
