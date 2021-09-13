@@ -20,6 +20,7 @@ void drawHist(RDF::RNode df_ll, RDF::RNode df_photon, TString obs, RDF::TH1DMode
   auto h_ll = (TH1F*) df_ll.Histo1D(model, obs).GetValue().Clone();
   auto h_photon = (TH1F*) df_photon.Histo1D(model, obs, "pt_weight").GetValue().Clone();
   auto c1 = new TCanvas("c1","c1",1200,1200);
+  c1->SetLogy();
   h_ll->SetLineColor(kBlue+1);
   h_photon->SetLineColor(kRed);
   h_ll->Draw();
@@ -29,7 +30,7 @@ void drawHist(RDF::RNode df_ll, RDF::RNode df_photon, TString obs, RDF::TH1DMode
   rp_inc->Draw();
   rp_inc->GetLowerRefYaxis()->SetTitle("ratio");
   rp_inc->GetLowerRefGraph()->SetMinimum(0);
-  rp_inc->GetLowerRefGraph()->SetMaximum(2);
+  rp_inc->GetLowerRefGraph()->SetMaximum(3);
   c1->Print("mc_closure_" + obs + ".png");
 }
 
@@ -210,7 +211,7 @@ int main(int argc, char **argv){
       std::cout << cutInfo.GetName() << "\t" << cutInfo.GetAll() << "\t" << cutInfo.GetPass() << "\t"
                 << cutInfo.GetEff() << " %" << std::endl;
    }
-  const float  met_binning[] = {0,50,100,150,200,250,600,1500};
+  const float  met_binning[] = {0,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,160,170,180,190,200,250,300,350,400,450,500,600,900,1500};
   RDF::TH1DModel met_model("","",sizeof(met_binning)/sizeof(float) - 1, met_binning);
   drawHist(df_ll_filtered_noMET, df_photon_weighted, "met_pt", met_model);
 
