@@ -88,13 +88,13 @@ RDF::RNode applyCutsLL(RDF::RNode df){
   return tmp;
 }
 
-RDF::RNode applyCutsPhoton(RDF::RNode df){
+RDF::RNode applyCutsMET(RDF::RNode df){
   std::function<bool(float)> met = [](float met) { return met < 60.; };
   auto tmp = df.Filter(met, {"met_pt"}, "MET<60");
   return tmp;
 }
 
-RDF::RNode applyCutsMET(RDF::RNode df){
+RDF::RNode applyCutsPhoton(RDF::RNode df){
   std::function<bool(float)> boson_eta = [](float Z_eta) { return abs(Z_eta) < 2.4; };
   std::function<bool(int)> nextra_leptons = [](int nextra_leptons) { return nextra_leptons == 0; };
   std::function<bool(int)> ngood_leptons = [](int ngood_leptons) { return ngood_leptons == 0; };
