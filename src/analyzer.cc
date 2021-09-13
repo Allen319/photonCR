@@ -16,9 +16,10 @@
 using namespace ROOT;
 namespace po = boost::program_options;
 
-void drawHist(RDF::RNode df_ll, RDF::RNode df_photon, TString obs, RDF::TH1DModel model){
+void drawHist(RDF::RNode df_ll, RDF::RNode df_photon, TString obs, RDF::TH1DModel model, float weight){
   auto h_ll = (TH1F*) df_ll.Histo1D(model, obs).GetValue().Clone();
   auto h_photon = (TH1F*) df_photon.Histo1D(model, obs, "pt_weight").GetValue().Clone();
+  h_photon->Scale(weight);
   auto c1 = new TCanvas("c1","c1",1200,1200);
   c1->SetLogy();
   h_ll->SetLineColor(kBlue+1);
@@ -194,6 +195,8 @@ int main(int argc, char **argv){
   RDF::TH1DModel pt_model_gamma("pt_gamma","pt_gamma",6, binning);
   auto h_pt_ll = (TH1F*)df_ll_aug.Histo1D(pt_model,"boson_pt", "corr").GetValue().Clone();
   auto h_pt_gamma = (TH1F*)df_gamma_eta_weighted.Histo1D(pt_model_gamma,"boson_pt", "corr_eta").GetValue().Clone();
+  
+  auto gamma_weight = h_pt_ll->Integral()/ h_pt_gamma->Integral();
   auto h_pt_weight = GetWeightHisto(h_pt_ll, h_pt_gamma, "pt");
   
   // define a lambda function for applying weights in the Data-Frame
@@ -211,9 +214,9 @@ int main(int argc, char **argv){
       std::cout << cutInfo.GetName() << "\t" << cutInfo.GetAll() << "\t" << cutInfo.GetPass() << "\t"
                 << cutInfo.GetEff() << " %" << std::endl;
    }
-  const float  met_binning[] = {0,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,160,170,180,190,200,250,300,350,400,450,500,600,900,1500};
+  const float  met_binning[] = {0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,160,170,180,190,200,250,300,350,400,450,500,600,900,1500};
   RDF::TH1DModel met_model("","",sizeof(met_binning)/sizeof(float) - 1, met_binning);
-  drawHist(df_ll_filtered_noMET, df_photon_weighted, "met_pt", met_model);
+  drawHist(df_ll_filtered_noMET, df_photon_weighted, "met_pt", met_model, gamma_weight);
 
   RDataFrame::ColumnNames_t toBeStored_ll = { "met_pt",
                                           }; 
