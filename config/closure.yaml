@@ -1,0 +1,26 @@
+tree_name: Events
+dilepton_files: 
+- /eos/cms/store/group/phys_smp/ZZTo2L2Nu/VBS/SGP2016/DYJetsToLL_M-50_HT-2500toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/group/phys_smp/ZZTo2L2Nu/VBS/SGP2016/DYJetsToLL_M-50_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/group/phys_smp/ZZTo2L2Nu/VBS/SGP2016/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/group/phys_smp/ZZTo2L2Nu/VBS/SGP2016/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/group/phys_smp/ZZTo2L2Nu/VBS/SGP2016/DYJetsToLL_M-50_HT-600to800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/group/phys_smp/ZZTo2L2Nu/VBS/SGP2016/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/group/phys_smp/ZZTo2L2Nu/VBS/SGP2016/DYJetsToLL_M-50_HT-800to1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/group/phys_smp/ZZTo2L2Nu/VBS/SGP2016/DYJetsToLL_M-50_HT-70to100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+photon_files: 
+- /eos/cms/store/user/mmittal/VBS/PhotonCR2016_09092021/GJets_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/user/mmittal/VBS/PhotonCR2016_09092021/GJets_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/user/mmittal/VBS/PhotonCR2016_09092021/GJets_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/user/mmittal/VBS/PhotonCR2016_09092021/GJets_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/user/mmittal/VBS/PhotonCR2016_09092021/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/user/mmittal/VBS/PhotonCR2016_09092021/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/user/mmittal/VBS/PhotonCR2016_09092021/QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/user/mmittal/VBS/PhotonCR2016_09092021/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/user/mmittal/VBS/PhotonCR2016_09092021/QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/user/mmittal/VBS/PhotonCR2016_09092021/QCD_HT300to500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/user/mmittal/VBS/PhotonCR2016_09092021/QCD_HT200to300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/user/mmittal/VBS/PhotonCR2016_09092021/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/user/mmittal/VBS/PhotonCR2016_09092021/QCD_HT50to100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+- /eos/cms/store/user/mmittal/VBS/PhotonCR2016_09092021/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+isMC: true
