@@ -37,4 +37,9 @@ target_link_libraries(runphoton
   PRIVATE utils
   PUBLIC ROOT::Hist ROOT::ROOTDataFrame ROOT::Tree
 )
+add_executable(skim src/skimmer.cc)
+target_link_libraries(skim
+  PRIVATE utils
+  PUBLIC ROOT::Hist ROOT::ROOTDataFrame ROOT::Tree
+)
   #PRIVATE stdc++fs

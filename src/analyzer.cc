@@ -117,6 +117,7 @@ int main(int argc, char **argv){
   std::string tree = Options::NodeAs<std::string>(config, {"tree_name"});
  // std::string dilepton_filename = Options::NodeAs<std::string>(config, {"dilepton_files"});
   std::vector<std::string> dilepton_filenames = Options::GetStrings(config, {"dilepton_files"});
+  std::cout << dilepton_filenames.at(0) << std::endl;
   std::vector<std::string> photon_filenames = Options::GetStrings(config, {"photon_files"});
   //std::string photon_filename = Options::NodeAs<std::string>(config, {"photon_files"});
   bool isMC = Options::NodeAs<bool>(config, {"isMC"});
@@ -127,7 +128,7 @@ int main(int argc, char **argv){
   for (auto &photon_filename : photon_filenames)
     FileInPath::GetFilenames(FileInPath::Resolve(photon_filename), photon_files);
   //std::string photonPath = FileInPath::Resolve(photon_filename);
-  RDataFrame::ColumnNames_t varibles = {"nJet","Muon_pt" "Jet_pt_nom", 
+  RDataFrame::ColumnNames_t varibles = {"nJet","Jet_pt_nom", 
       "lead_jet_pt", "lead_jet_phi", "trail_jet_pt", "trail_jet_eta",
       "trail_jet_phi", "lep_category", "ngood_jets", "ngood_bjets",
       "nhad_taus", "met_pt", "met_phi", "delta_R_ll", "delta_phi_j_met",
@@ -135,7 +136,7 @@ int main(int argc, char **argv){
       "Z_pt", "Z_eta", "Z_phi", "Z_mass",
       "nPhoton", "nMuon", "nElectron", "Pileup_nPU",
       "ngood_leptons", "nextra_leptons",
-      "deltaPhiClosestJetMet", "deltaPhiFarthestJetMet",
+      //"deltaPhiClosestJetMet", "deltaPhiFarthestJetMet",
       //"delta_phi_ZMet_bst",
       "nloose_photons",
        "delta_phi_ZMet"};

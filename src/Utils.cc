@@ -15,4 +15,6 @@ namespace utils {
     TH1F *histo = (TH1F*) h1->Clone();
     return histo;
   }
+  
 };
+

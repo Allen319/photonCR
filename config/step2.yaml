@@ -1,0 +1,9 @@
+tree_name: Events
+dilepton_files:
+- outputs/DY
+photon_files:
+- outputs/GJet
+file_paths:
+  GJet: outputs/Gjet
+  DY: outputs/DY
+isMC: true
