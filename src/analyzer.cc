@@ -21,7 +21,7 @@ void drawHist(RDF::RNode df_ll, RDF::RNode df_photon, TString obs, RDF::TH1DMode
   auto df_photon_reweighted = df_photon.Define("sf", "weight * xsec_reweight * pt_weight");
   auto h_ll = (TH1F*) df_ll_reweighted.Histo1D(model, obs, "sf").GetValue().Clone();
   auto h_photon = (TH1F*) df_photon_reweighted.Histo1D(model, obs, "sf").GetValue().Clone();
-  h_photon->Scale(weight);
+  //h_photon->Scale(weight);
   auto c1 = new TCanvas("c1","c1",1200,1200);
   c1->SetLogy();
   h_ll->SetLineColor(kBlue+1);
@@ -37,7 +37,7 @@ void drawHist(RDF::RNode df_ll, RDF::RNode df_photon, TString obs, RDF::TH1DMode
   c1->Print("mc_closure_" + obs + ".png");
 }
 
-TH1F * GetWeightHisto(TH1F * h_ll, TH1F * h_gamma,  TString obs) {
+TH1F * GetWeightHisto(TH1F * h_ll, TH1F * h_gamma,  TString obs, float weight = 1.0) {
 
   h_ll->Scale(1/h_ll->Integral());
   h_gamma->Scale(1/h_gamma->Integral());
@@ -45,6 +45,7 @@ TH1F * GetWeightHisto(TH1F * h_ll, TH1F * h_gamma,  TString obs) {
   h_weight->Divide(h_gamma);
   h_weight->SetName(obs + "_weight");
   h_weight->SetTitle(obs + "_weight");
+  h_weight->Scale(weight);
   if (obs.EqualTo("nvtx")){
   auto h_nvtx_weight_smooth = utils::SmoothenHisto(h_weight);
   return h_nvtx_weight_smooth;
@@ -200,7 +201,7 @@ int main(int argc, char **argv){
   auto h_pt_gamma = (TH1F*)df_gamma_eta_weighted.Histo1D(pt_model_gamma,"boson_pt", "corr_eta").GetValue().Clone();
   
   auto gamma_weight = h_pt_ll->Integral()/ h_pt_gamma->Integral();
-  auto h_pt_weight = GetWeightHisto(h_pt_ll, h_pt_gamma, "pt");
+  auto h_pt_weight = GetWeightHisto(h_pt_ll, h_pt_gamma, "pt", gamma_weight);
   
   // define a lambda function for applying weights in the Data-Frame
   auto applyPtWeight = [] (float boson_pt) {
