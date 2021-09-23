@@ -17,8 +17,10 @@ using namespace ROOT;
 namespace po = boost::program_options;
 
 void drawHist(RDF::RNode df_ll, RDF::RNode df_photon, TString obs, RDF::TH1DModel model, float weight){
-  auto h_ll = (TH1F*) df_ll.Histo1D(model, obs, "weight * xsec_weight").GetValue().Clone();
-  auto h_photon = (TH1F*) df_photon.Histo1D(model, obs, "pt_weight * weight * xsec_weight").GetValue().Clone();
+  auto df_ll_reweighted = df_ll.Define("sf", "weight * xsec_reweight");
+  auto df_photon_reweighted = df_photon.Define("sf", "weight * xsec_reweight * pt_weight");
+  auto h_ll = (TH1F*) df_ll_reweighted.Histo1D(model, obs, "sf").GetValue().Clone();
+  auto h_photon = (TH1F*) df_photon_reweighted.Histo1D(model, obs, "sf").GetValue().Clone();
   h_photon->Scale(weight);
   auto c1 = new TCanvas("c1","c1",1200,1200);
   c1->SetLogy();
@@ -138,7 +140,7 @@ int main(int argc, char **argv){
       "ngood_leptons", "nextra_leptons",
       //"deltaPhiClosestJetMet", "deltaPhiFarthestJetMet",
       //"delta_phi_ZMet_bst",
-      "nloose_photons",
+      "nloose_photons","xsec_reweight",
        "delta_phi_ZMet"};
   RDataFrame::ColumnNames_t storeBranches = {"boson_pt", "boson_eta", "Pileup_nPU", "met_pt"};
   if (isMC) {
@@ -168,14 +170,14 @@ int main(int argc, char **argv){
                   Define("boson_eta", "abs(Z_eta)").
                   Define("nvtx", "Pileup_nPU").
                   Define("ptmiss", "met_pt").
-                  Define("corr", "weight * xsec_weight");
+                  Define("corr", "weight * xsec_reweight");
 
   auto df_gamma_aug = df_gamma_filtered.
                   Define("boson_pt", "Z_pt").
                   Define("boson_eta", "abs(Z_eta)").
                   Define("nvtx", "Pileup_nPU").
                   Define("ptmiss", "met_pt").
-                  Define("corr", "weight * xsec_weight");
+                  Define("corr", "weight * xsec_reweight");
   // fill histograms in binning of nvtx and abseta
   auto h_nvtx_ll = (TH1F*)df_ll_aug.Histo1D({"nvtx_ll","nvtx_ll",100,0,100},"nvtx", "corr").GetValue().Clone();
   auto h_nvtx_gamma = (TH1F*)df_gamma_aug.Histo1D({"nvtx_gamma","nvtx_gamma",100,0,100},"nvtx", "corr").GetValue().Clone();
