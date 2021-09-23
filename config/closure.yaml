@@ -1,5 +1,5 @@
 tree_name: Events
-dilepton_MC:
+samples:
 - DYJetsToLL_M-50_HT-70to100
 - DYJetsToLL_M-50_HT-100to200
 - DYJetsToLL_M-50_HT-200to400
@@ -8,7 +8,6 @@ dilepton_MC:
 - DYJetsToLL_M-50_HT-800to1200
 - DYJetsToLL_M-50_HT-1200to2500
 - DYJetsToLL_M-50_HT-2500toInf
-photon_MC: 
 - GJets_HT-40To100
 - GJets_HT-100To200
 - GJets_HT-200To400
