@@ -1,7 +1,7 @@
 # photonCR-analyzer
 This repository uses Git and hence should be cloned with
 ```sh
-git clone https://github.com/Allen319/photonCR.git
+git clone https://github.com/Allen319/photonCR.git -b beta
 ```
 No CMSSW environment is needed, so it is unnecessary to put this repository under CMSSW.
 
