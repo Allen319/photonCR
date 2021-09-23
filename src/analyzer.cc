@@ -17,8 +17,8 @@ using namespace ROOT;
 namespace po = boost::program_options;
 
 void drawHist(RDF::RNode df_ll, RDF::RNode df_photon, TString obs, RDF::TH1DModel model, float weight){
-  auto h_ll = (TH1F*) df_ll.Histo1D(model, obs).GetValue().Clone();
-  auto h_photon = (TH1F*) df_photon.Histo1D(model, obs, "pt_weight").GetValue().Clone();
+  auto h_ll = (TH1F*) df_ll.Histo1D(model, obs, "weight * xsec_weight").GetValue().Clone();
+  auto h_photon = (TH1F*) df_photon.Histo1D(model, obs, "pt_weight * weight * xsec_weight").GetValue().Clone();
   h_photon->Scale(weight);
   auto c1 = new TCanvas("c1","c1",1200,1200);
   c1->SetLogy();
@@ -168,14 +168,14 @@ int main(int argc, char **argv){
                   Define("boson_eta", "abs(Z_eta)").
                   Define("nvtx", "Pileup_nPU").
                   Define("ptmiss", "met_pt").
-                  Define("corr", "weight");
+                  Define("corr", "weight * xsec_weight");
 
   auto df_gamma_aug = df_gamma_filtered.
                   Define("boson_pt", "Z_pt").
                   Define("boson_eta", "abs(Z_eta)").
                   Define("nvtx", "Pileup_nPU").
                   Define("ptmiss", "met_pt").
-                  Define("corr", "weight");
+                  Define("corr", "weight * xsec_weight");
   // fill histograms in binning of nvtx and abseta
   auto h_nvtx_ll = (TH1F*)df_ll_aug.Histo1D({"nvtx_ll","nvtx_ll",100,0,100},"nvtx", "corr").GetValue().Clone();
   auto h_nvtx_gamma = (TH1F*)df_gamma_aug.Histo1D({"nvtx_gamma","nvtx_gamma",100,0,100},"nvtx", "corr").GetValue().Clone();
