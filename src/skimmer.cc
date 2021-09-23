@@ -75,7 +75,7 @@ int main(int argc, char **argv){
           "Jet_qgl"})
         varibles.push_back(br);
     }
-    if (aName == "GJets") {
+    if (boost::contains(aName, "GJet")) {
       //varibles.insert(0, RDataFrame::ColumnNames_t{"weight"});
       for (auto &br : RDataFrame::ColumnNames_t{
         "nPhoton", "nMuon", "nElectron",
