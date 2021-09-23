@@ -31,5 +31,8 @@ cd -
 
 Simply run with 
 ```sh
-runphoton -c all.yaml
+mkdir -p outputs/DY
+mkdir outputs/GJet
+skim -c closure_new.yaml
+runphoton -c step2.yaml
 ```
