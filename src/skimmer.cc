@@ -33,7 +33,6 @@ RDF::RNode applyCutsCommon(RDF::RNode df){
                      Filter(nGoodbJet, {"ngood_bjets"}, "bveto").
                      Filter(nTaus, {"nhad_taus"}, "tau-veto").
                      Filter(delta_phi_j_met, {"delta_phi_j_met"}, "delta_phi_j_met").
-                     //Filter(delta_phi_ZMet_bst, {"delta_phi_ZMet_bst"}).
                      Filter(Jet_etas_multiplied, {"Jet_etas_multiplied"}, "opposite_jet_eta").
                      Filter(dijet_Mjj, {"dijet_Mjj"}, "dijet_Mjj<400").
                      Filter(dijet_abs_dEta, {"dijet_abs_dEta"}, "dijet_abs_eta<2.4").
@@ -45,45 +44,21 @@ int main(int argc, char **argv){
   Options options(argc, argv);
   YAML::Node const config = options.GetConfig();
   std::string tree = Options::NodeAs<std::string>(config, {"tree_name"});
- // std::string dilepton_filename = Options::NodeAs<std::string>(config, {"dilepton_files"});
   std::vector<std::string> files = Options::GetStrings(config, {"samples"});
-  //std::string photon_filename = Options::NodeAs<std::string>(config, {"photon_files"});
   bool isMC = Options::NodeAs<bool>(config, {"isMC"});
   
-  RDataFrame::ColumnNames_t varibles_test = {"nJet"};
-  RDataFrame::ColumnNames_t varibles = {"nJet","Jet_pt_nom", 
-      "lead_jet_pt", "lead_jet_phi", "trail_jet_pt", "trail_jet_eta",
-      "trail_jet_phi", "lep_category", "ngood_jets", "ngood_bjets",
-      "nhad_taus", "met_pt", "met_phi", "delta_R_ll", "delta_phi_j_met",
-      "Jet_etas_multiplied", "dijet_Mjj", "dijet_abs_dEta", 
-      "Z_pt", "Z_eta", "Z_phi", "Z_mass",
-      "Pileup_nPU",
-      //"ngood_leptons", "nextra_leptons",
-      //"deltaPhiClosestJetMet", "deltaPhiFarthestJetMet",
-      //"delta_phi_ZMet_bst",
-      //"nloose_photons",
-       "delta_phi_ZMet",};
+  RDataFrame::ColumnNames_t varibles; 
+  for (auto &branch: Options::GetStrings(config,{"branch", "common"}))
+    varibles.push_back(branch);
+  if (isMC)
+    for (auto &br : Options::GetStrings(config,{"branch", "MC"}))
+      varibles.push_back(br);
   for (auto &aName : files)
   {
-    std::cout<< aName << std::endl;
     std::vector<std::string> filepaths;
     FileInPath::GetFilenames(FileInPath::Resolve(Options::NodeAs<std::string>(config, {"file_paths", aName})), filepaths);
-  //std::string photonPath = FileInPath::Resolve(photon_filename);
-    if (isMC) {
-      //varibles.insert(0, RDataFrame::ColumnNames_t{"weight"});
-      for (auto &br : RDataFrame::ColumnNames_t{"weight", "puWeight", "w_muon_SF", "w_electron_SF",
-          "Jet_qgl"})
-        varibles.push_back(br);
-    }
     if (boost::contains(aName, "GJet")) {
-      //varibles.insert(0, RDataFrame::ColumnNames_t{"weight"});
-      for (auto &br : RDataFrame::ColumnNames_t{
-        "nPhoton", "nMuon", "nElectron",
-        "ngood_leptons", "nextra_leptons",
-        //"deltaPhiClosestJetMet", "deltaPhiFarthestJetMet",
-        //"delta_phi_ZMet_bst",
-        //"nloose_photons"
-        })
+      for (auto &br : Options::GetStrings(config,{"branch", "photon"}))
         varibles.push_back(br);
     }
   // enabling Multi-Thread

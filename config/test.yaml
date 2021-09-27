@@ -1,0 +1,46 @@
+tree_name: Events
+samples:
+- DY
+- GJets
+file_paths:
+  DY: samples/DY
+  GJets: samples/Gjet
+lumi: 1.0
+xsec:
+  DY: 1
+  GJets: 1
+isMC: true
+branch:
+  common:
+  - nJet
+  - Jet_pt_nom
+  - lead_jet_pt
+  - lead_jet_phi
+  - trail_jet_pt
+  - trail_jet_eta
+  - trail_jet_phi
+  - lep_category
+  - ngood_jets
+  - ngood_bjets
+  - nhad_taus
+  - met_pt
+  - met_phi
+  - delta_R_ll
+  - delta_phi_j_met
+  - Jet_etas_multiplied
+  - dijet_Mjj
+  - dijet_abs_dEta
+  - Z_pt
+  - Z_eta
+  - Z_phi
+  - Z_mass
+  - Pileup_nPU
+  - delta_phi_ZMet
+  photon:
+  - nPhoton
+  - nMuon
+  - nElectron
+  - ngood_leptons
+  - nextra_leptons
+  MC:
+  - weight

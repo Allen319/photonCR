@@ -43,4 +43,37 @@ xsec:
   DYJetsToLL_M-50_HT-800to1200: 0.6304
   DYJetsToLL_M-50_HT-1200to2500: 0.1514
   DYJetsToLL_M-50_HT-2500toInf: 0.003565
-   
+branch:
+  common:
+  - nJet
+  - Jet_pt_nom
+  - lead_jet_pt
+  - lead_jet_phi
+  - trail_jet_pt
+  - trail_jet_eta
+  - trail_jet_phi
+  - lep_category
+  - ngood_jets
+  - ngood_bjets
+  - nhad_taus
+  - met_pt
+  - met_phi
+  - delta_R_ll
+  - delta_phi_j_met
+  - Jet_etas_multiplied
+  - dijet_Mjj
+  - dijet_abs_dEta
+  - Z_pt
+  - Z_eta
+  - Z_phi
+  - Z_mass
+  - Pileup_nPU
+  - delta_phi_ZMet
+  photon:
+  - nPhoton
+  - nMuon
+  - nElectron
+  - ngood_leptons
+  - nextra_leptons
+  MC:
+  - weight
