@@ -96,8 +96,9 @@ int main(int argc, char **argv){
     auto df_tmp3 = applyCutsStrings(df_tmp2, triggers);
     varibles.push_back("xsec_reweight");
     std::string dir_name = "";
-    if (boost::contains(Options::NodeAs<std::string>(config, {"attributes", aName, "process"}), "DY")) dir_name = "outputs/DY/";
+    if (boost::contains(Options::NodeAs<std::string>(config, {"attributes", aName, "process"}), "HTbinDY")) dir_name = "outputs/HTbinDY/";
     else if (boost::contains(Options::NodeAs<std::string>(config, {"attributes", aName, "process"}), "GJet")) dir_name = "outputs/GJet/";
+    else if (boost::contains(Options::NodeAs<std::string>(config, {"attributes", aName, "process"}), "inclusiveDY")) dir_name = "outputs/inclusiveDY/";
     df_tmp3.Snapshot("Events", dir_name + aName+".root", varibles);
   }
   return 0;

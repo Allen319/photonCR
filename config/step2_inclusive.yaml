@@ -1,9 +1,9 @@
 tree_name: Events
 dilepton_files:
-- outputs/HTbinDY
+- outputs/inclusiveDY
 photon_files:
 - outputs/GJet
 file_paths:
   GJet: outputs/Gjet
-  DY: outputs/HTbinDY
+  DY: outputs/inclusiveDY
 isMC: true
