@@ -1,15 +1,28 @@
 tree_name: Events
+lumi: 1.0
 samples:
-- DY
-- GJets
+  - DY
+  - GJets
+types:
+  DY: dilepton_MC
+  GJets: photon_MC
 file_paths:
   DY: samples/DY
   GJets: samples/Gjet
-lumi: 1.0
 xsec:
   DY: 1
   GJets: 1
-isMC: true
+attributes:
+  DY:
+    type: dilepton_MC
+    xsec: 1.0
+    path: samples/DY
+    process: DY
+  GJets:
+    type: photon_MC
+    xsec: 1.0
+    path: samples/Gjet
+    process: GJets
 branch:
   common:
   - nJet
@@ -44,3 +57,19 @@ branch:
   - nextra_leptons
   MC:
   - weight
+HLT:
+  dilepton_MC:
+  - HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL  # Unprescaled in run <= 280385
+  - HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ
+  - HLT_IsoMu24
+  - HLT_Mu50
+  - HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ
+  - HLT_DoubleEle33_CaloIdL_MW  # Unprescaled in run <= 276437 and run >= 278873
+  - HLT_Ele27_WPTight_Gsf
+  photon_MC:
+  - HLT_Photon50_R9Id90_HE10_IsoM
+  - HLT_Photon75_R9Id90_HE10_IsoM
+  - HLT_Photon90_R9Id90_HE10_IsoM
+  - HLT_Photon120_R9Id90_HE10_IsoM
+  - HLT_Photon165_R9Id90_HE10_IsoM
+  - HLT_Photon175

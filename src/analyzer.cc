@@ -23,17 +23,72 @@ void drawHist(RDF::RNode df_ll, RDF::RNode df_photon, TString obs, RDF::TH1DMode
   auto h_photon = (TH1F*) df_photon_reweighted.Histo1D(model, obs, "sf").GetValue().Clone();
   //h_photon->Scale(weight);
   auto c1 = new TCanvas("c1","c1",1200,1200);
-  c1->SetLogy();
+  TPad *pad1 = new TPad("pad1", "pad1", 0, 0.3, 1, 1.0);
+  pad1->SetBottomMargin(0); // Upper and lower plot are joined
+  pad1->SetGridx();         // Vertical grid
+  pad1->SetLogy();
+  pad1->Draw();             // Draw the upper pad: pad1
+  pad1->cd();               // pad1 becomes the current pad
   h_ll->SetLineColor(kBlue+1);
   h_photon->SetLineColor(kRed);
   h_ll->Draw();
   h_photon->Draw("Same");
-  auto rp_inc = new TRatioPlot(h_ll, h_photon);
-  c1->SetTicks(0,1);
-  rp_inc->Draw();
-  rp_inc->GetLowerRefYaxis()->SetTitle("ratio");
-  rp_inc->GetLowerRefGraph()->SetMinimum(0);
-  rp_inc->GetLowerRefGraph()->SetMaximum(3);
+   c1->cd();          // Go back to the main canvas before defining pad2
+   TPad *pad2 = new TPad("pad2", "pad2", 0, 0.05, 1, 0.3);
+   pad2->SetTopMargin(0);
+   pad2->SetBottomMargin(0.2);
+   pad2->SetGridx(); // vertical grid
+   pad2->Draw();
+   pad2->cd();       // pad2 becomes the current pad
+ 
+   // Define the ratio plot
+   TH1F *h3 = (TH1F*)h_ll->Clone("h3");
+   h3->SetLineColor(kBlack);
+   h3->SetMinimum(0.0);  // Define Y ..
+   h3->SetMaximum(2.0); // .. range
+   h3->Sumw2();
+   h3->SetStats(0);      // No statistics on lower plot
+   h3->Divide(h_photon);
+   h3->SetMarkerStyle(21);
+   h3->Draw("ep");       // Draw the ratio plot
+ 
+   // h1 settings
+   h_ll->SetLineColor(kBlue+1);
+   h_ll->SetLineWidth(2);
+ 
+   // Y axis h1 plot settings
+   h_ll->GetYaxis()->SetTitleSize(20);
+   h_ll->GetYaxis()->SetTitleFont(43);
+   h_ll->GetYaxis()->SetTitleOffset(1.55);
+ 
+   // h2 settings
+   h_photon->SetLineColor(kRed);
+   h_photon->SetLineWidth(2);
+ 
+   // Ratio plot (h3) settings
+   h3->SetTitle(""); // Remove the ratio title
+ 
+   // Y axis ratio plot settings
+   h3->GetYaxis()->SetTitle("ratio ll/photon ");
+   h3->GetYaxis()->SetNdivisions(505);
+   h3->GetYaxis()->SetTitleSize(20);
+   h3->GetYaxis()->SetTitleFont(43);
+   h3->GetYaxis()->SetTitleOffset(1.55);
+   h3->GetYaxis()->SetLabelFont(43); // Absolute font size in pixel (precision 3)
+   h3->GetYaxis()->SetLabelSize(15);
+ 
+   // X axis ratio plot settings
+   h3->GetXaxis()->SetTitleSize(20);
+   h3->GetXaxis()->SetTitleFont(43);
+   h3->GetXaxis()->SetTitleOffset(1);
+   h3->GetXaxis()->SetLabelFont(43); // Absolute font size in pixel (precision 3)
+   h3->GetXaxis()->SetLabelSize(15);
+  //auto rp_inc = new TRatioPlot(h_ll, h_photon);
+  //c1->SetTicks(0,1);
+  //rp_inc->Draw();
+  //rp_inc->GetLowerRefYaxis()->SetTitle("ratio");
+  //rp_inc->GetLowerRefGraph()->SetMinimum(0);
+  //rp_inc->GetLowerRefGraph()->SetMaximum(3);
   c1->Print("mc_closure_" + obs + ".png");
 }
 

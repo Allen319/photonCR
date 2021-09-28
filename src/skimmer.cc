@@ -39,25 +39,37 @@ RDF::RNode applyCutsCommon(RDF::RNode df){
                      Filter(zpt, {"Z_pt"}, "boson_pt>55");
   return tmp;
 }
+
+RDF::RNode applyCutsStrings(RDF::RNode df, RDataFrame::ColumnNames_t branches) {
+  if (branches.size() == 0 ) return df;
+  std::string cut = "";
+  for (auto &br: branches) {
+    if (&br != &branches.back())
+      cut = cut + br + " == 1 || ";
+    else
+      cut = cut + br + " == 1";
+  }
+  return df.Filter(cut);
+}
+
 int main(int argc, char **argv){
 
   Options options(argc, argv);
   YAML::Node const config = options.GetConfig();
   std::string tree = Options::NodeAs<std::string>(config, {"tree_name"});
   std::vector<std::string> files = Options::GetStrings(config, {"samples"});
-  bool isMC = Options::NodeAs<bool>(config, {"isMC"});
   
   RDataFrame::ColumnNames_t varibles; 
   for (auto &branch: Options::GetStrings(config,{"branch", "common"}))
     varibles.push_back(branch);
-  if (isMC)
-    for (auto &br : Options::GetStrings(config,{"branch", "MC"}))
-      varibles.push_back(br);
   for (auto &aName : files)
   {
     std::vector<std::string> filepaths;
-    FileInPath::GetFilenames(FileInPath::Resolve(Options::NodeAs<std::string>(config, {"file_paths", aName})), filepaths);
-    if (boost::contains(aName, "GJet")) {
+    FileInPath::GetFilenames(FileInPath::Resolve(Options::NodeAs<std::string>(config, {"attributes", aName, "path"})), filepaths);
+    if (boost::contains(Options::NodeAs<std::string>(config, {"attributes", aName, "type"}), "MC"))
+      for (auto &br : Options::GetStrings(config,{"branch", "MC"}))
+        varibles.push_back(br);
+    if (boost::contains(Options::NodeAs<std::string>(config, {"attributes", aName, "type"}), "photon")) {
       for (auto &br : Options::GetStrings(config,{"branch", "photon"}))
         varibles.push_back(br);
     }
@@ -70,7 +82,7 @@ int main(int argc, char **argv){
     long int num = df_run.Sum("genEventSumw2").GetValue();
   // apply common selections
     double lumi = Options::NodeAs<double>(config, {"lumi"});;
-    double xsec = Options::NodeAs<double>(config, {"xsec", aName});
+    double xsec = Options::NodeAs<double>(config, {"attributes", aName, "xsec"});
     double factor = lumi * xsec / num;
     int log_value = (int)log10(factor);
     int precision = 3;
@@ -80,11 +92,13 @@ int main(int argc, char **argv){
     std::cout<< reweight_factor <<std::endl;
     auto df_tmp = df.Define("xsec_reweight", reweight_factor); 
     auto df_tmp2 = applyCutsCommon(df_tmp);
+    auto triggers = Options::GetStrings(config,{"HLT", Options::NodeAs<std::string>(config, {"types", aName})});
+    auto df_tmp3 = applyCutsStrings(df_tmp2, triggers);
     varibles.push_back("xsec_reweight");
     std::string dir_name = "";
-    if (boost::contains(aName, "DY")) dir_name = "outputs/DY/";
-    else if (boost::contains(aName, "GJet")) dir_name = "outputs/GJet/";
-    df_tmp2.Snapshot("Events", dir_name + aName+".root", varibles);
+    if (boost::contains(Options::NodeAs<std::string>(config, {"attributes", aName, "process"}), "DY")) dir_name = "outputs/DY/";
+    else if (boost::contains(Options::NodeAs<std::string>(config, {"attributes", aName, "process"}), "GJet")) dir_name = "outputs/GJet/";
+    df_tmp3.Snapshot("Events", dir_name + aName+".root", varibles);
   }
   return 0;
 }

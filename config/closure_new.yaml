@@ -27,6 +27,73 @@ file_paths:
   DYJetsToLL_M-50_HT-800to1200: /eos/cms/store/group/phys_smp/ZZTo2L2Nu/VBS/SGP2016/DYJetsToLL_M-50_HT-800to1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
   DYJetsToLL_M-50_HT-1200to2500: /eos/cms/store/group/phys_smp/ZZTo2L2Nu/VBS/SGP2016/DYJetsToLL_M-50_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
   DYJetsToLL_M-50_HT-2500toInf: /eos/cms/store/group/phys_smp/ZZTo2L2Nu/VBS/SGP2016/DYJetsToLL_M-50_HT-2500toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+attributes:
+  GJets_HT-40To100:
+    path: /eos/cms/store/user/mmittal/VBS/PhotonCR2016_withmass/GJets_HT-40To100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+    xsec: 20790.0
+    type: photon_MC
+    process: GJets
+  GJets_HT-100To200:
+    path: /eos/cms/store/user/mmittal/VBS/PhotonCR2016_withmass/GJets_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+    xsec: 9197.0
+    type: photon_MC
+    process: GJets
+  GJets_HT-200To400:
+    path: /eos/cms/store/user/mmittal/VBS/PhotonCR2016_withmass/GJets_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+    xsec: 2317.0
+    type: photon_MC
+    process: GJets
+  GJets_HT-400To600:
+    path: /eos/cms/store/user/mmittal/VBS/PhotonCR2016_withmass/GJets_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+    xsec: 276.9
+    type: photon_MC
+    process: GJets
+  GJets_HT-600ToInf:
+    path: /eos/cms/store/user/mmittal/VBS/PhotonCR2016_withmass/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+    xsec: 94.28
+    type: photon_MC
+    process: GJets
+  DYJetsToLL_M-50_HT-70to100:
+    path: /eos/cms/store/group/phys_smp/ZZTo2L2Nu/VBS/SGP2016/DYJetsToLL_M-50_HT-70to100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+    xsec: 169.9
+    type: dilepton_MC
+    process: DY
+  DYJetsToLL_M-50_HT-100to200: 
+    path: /eos/cms/store/group/phys_smp/ZZTo2L2Nu/VBS/SGP2016/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+    xsec: 147.40
+    type: dilepton_MC
+    process: DY
+    
+  DYJetsToLL_M-50_HT-200to400: 
+    path: /eos/cms/store/group/phys_smp/ZZTo2L2Nu/VBS/SGP2016/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+    xsec: 40.99
+    type: dilepton_MC
+    process: DY
+  DYJetsToLL_M-50_HT-400to600: 
+    path: /eos/cms/store/group/phys_smp/ZZTo2L2Nu/VBS/SGP2016/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+    xsec: 5.678
+    type: dilepton_MC
+    process: DY
+  DYJetsToLL_M-50_HT-600to800: 
+    path: /eos/cms/store/group/phys_smp/ZZTo2L2Nu/VBS/SGP2016/DYJetsToLL_M-50_HT-600to800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+    xsec: 1.367
+    type: dilepton_MC
+    process: DY
+  DYJetsToLL_M-50_HT-800to1200: 
+    path: /eos/cms/store/group/phys_smp/ZZTo2L2Nu/VBS/SGP2016/DYJetsToLL_M-50_HT-800to1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+    xsec: 0.6304
+    type: dilepton_MC
+    process: DY
+  DYJetsToLL_M-50_HT-1200to2500: 
+    path: /eos/cms/store/group/phys_smp/ZZTo2L2Nu/VBS/SGP2016/DYJetsToLL_M-50_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+    xsec: 0.1514
+    type: dilepton_MC
+    process: DY
+  DYJetsToLL_M-50_HT-2500toInf: 
+    path: /eos/cms/store/group/phys_smp/ZZTo2L2Nu/VBS/SGP2016/DYJetsToLL_M-50_HT-2500toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+    xsec: 0.003565
+    type: dilepton_MC
+    process: DY
 isMC: true
 lumi: 35900
 xsec:
@@ -77,3 +144,19 @@ branch:
   - nextra_leptons
   MC:
   - weight
+HLT:
+  dilepton_MC:
+  - HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL  # Unprescaled in run <= 280385
+  - HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ
+  - HLT_IsoMu24
+  - HLT_Mu50
+  - HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ
+  - HLT_DoubleEle33_CaloIdL_MW  # Unprescaled in run <= 276437 and run >= 278873
+  - HLT_Ele27_WPTight_Gsf
+  photon_MC:
+  - HLT_Photon50_R9Id90_HE10_IsoM
+  - HLT_Photon75_R9Id90_HE10_IsoM
+  - HLT_Photon90_R9Id90_HE10_IsoM
+  - HLT_Photon120_R9Id90_HE10_IsoM
+  - HLT_Photon165_R9Id90_HE10_IsoM
+  - HLT_Photon175
