@@ -96,7 +96,7 @@ attributes:
     process: HTbinDY
   DYJetsToLL_M-50:
     path: /eos/cms/store/user/mmittal/VBS/DYinc/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8
-    xsec: 1.0 
+    xsec: 5765.4
     type: dilepton_MC
     process: inclusiveDY
 isMC: true
