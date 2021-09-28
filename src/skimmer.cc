@@ -92,7 +92,7 @@ int main(int argc, char **argv){
     std::cout<< reweight_factor <<std::endl;
     auto df_tmp = df.Define("xsec_reweight", reweight_factor); 
     auto df_tmp2 = applyCutsCommon(df_tmp);
-    auto triggers = Options::GetStrings(config,{"HLT", Options::NodeAs<std::string>(config, {"types", aName})});
+    auto triggers = Options::GetStrings(config,{"HLT", Options::NodeAs<std::string>(config, {"attributes", aName, "type"})});
     auto df_tmp3 = applyCutsStrings(df_tmp2, triggers);
     varibles.push_back("xsec_reweight");
     std::string dir_name = "";
